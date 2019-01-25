@@ -1,21 +1,53 @@
-// VCam.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+// OpenCVWebcamTest.cpp
 
 #include "pch.h"
-#include <iostream>
+#include<opencv2/core/core.hpp>
+#include<opencv2/highgui/highgui.hpp>
+#include<opencv2/imgproc/imgproc.hpp>
 
-int main()
-{
-    std::cout << "Hello World!\n"; 
+
+#include<iostream>
+#include<conio.h>           // may have to modify this line if not using Windows
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int main() {
+	cv::VideoCapture capWebcam(0);            // declare a VideoCapture object and associate to webcam, 0 => use 1st webcam
+
+	if (capWebcam.isOpened() == false) {                                // check if VideoCapture object was associated to webcam successfully
+		std::cout << "error: capWebcam not accessed successfully\n\n";      // if not, print error message to std out
+		_getch();                                                           // may have to modify this line if not using Windows
+		return(0);                                                          // and exit program
+	}
+
+	cv::Mat imgOriginal;        // input image
+
+	char charCheckForEscKey = 0;
+
+	while (charCheckForEscKey != 27 && capWebcam.isOpened()) {            // until the Esc key is pressed or webcam connection is lost
+		bool blnFrameReadSuccessfully = capWebcam.read(imgOriginal);            // get next frame
+
+		if (!blnFrameReadSuccessfully || imgOriginal.empty()) {                 // if frame not read successfully
+			std::cout << "error: frame not read from webcam\n";                 // print error message to std out
+			break;                                                              // and jump out of while loop
+		}
+               // convert to grayscale
+		cv::flip(imgOriginal, imgOriginal, 1);
+								  // declare windows
+		cv::namedWindow("imgOriginal", 1);       // note: you can use CV_WINDOW_NORMAL which allows resizing the window
+																// CV_WINDOW_AUTOSIZE is the default
+		cv::imshow("imgOriginal", imgOriginal);                 // show windows
+
+		charCheckForEscKey = cv::waitKey(1);        // delay (in ms) and get key press, if any
+	}   // end while
+
+	return(0);
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+
+
+
+
+
+
+
